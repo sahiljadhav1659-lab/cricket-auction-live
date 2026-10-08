@@ -354,6 +354,52 @@ export default function AdminPage() {
     alert("📥 All players Excel downloaded successfully!");
   };
 
+  const downloadApprovedPlayersExcel = () => {
+  const approvedPlayers = players.filter(
+    (player) =>
+      player.payment_status === "Paid" &&
+      player.auction_status === "Confirmed"
+  );
+
+  if (approvedPlayers.length === 0) {
+    alert("No approved players available.");
+    return;
+  }
+
+  const excelData = approvedPlayers.map((player) => ({
+    "Registration ID": player.registration_id,
+    "Full Name": player.name,
+    Email: player.email,
+    Mobile: player.mobile,
+    "Date of Birth": player.dob,
+    City: player.city,
+    "Cricket Role": player.role,
+    Experience: player.experience,
+    Address: player.address,
+    "Registration Fee": player.registration_fee,
+    "Payment Method": player.payment_method,
+    "UTR / Transaction ID":
+      player.transaction_id || "Not submitted",
+    "Payment Status": player.payment_status,
+    "Auction Status": player.auction_status,
+    "Registration Date": player.created_at,
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Approved Players"
+  );
+
+  XLSX.writeFile(
+    workbook,
+    "Cricket_Auction_Approved_Players.xlsx"
+  );
+};
   // ============================================================
   // LOGOUT
   // ============================================================
@@ -695,7 +741,12 @@ export default function AdminPage() {
               >
                 📥 Download All Players Excel
               </button>
-
+              <button
+  onClick={downloadApprovedPlayersExcel}
+  className="rounded-lg bg-green-600 px-4 py-2 font-semibold text-white hover:bg-green-700"
+>
+  📊 Download Approved Players Excel
+</button>
             </div>
 
           </div>
